@@ -40,7 +40,9 @@ def confbridge_list_participants(confno):
     participants = []
     lines = output.split('\n')
     header = lines[0].split()
-    for line in lines[2:]:
+    for line in lines[2:]: # changed here
+        if 'Asterisk ending' in line:
+            continue
         line = line.split()
         channel = line[0]
         flags = ''
@@ -50,12 +52,19 @@ def confbridge_list_participants(confno):
             if len(line) == 3:
                 # User Profile and Bridge Profile are empty as it should be.
                 callerid = line[2]
+            else:
+                # User Profile and Bridge Profile are set.
+                callerid = line[4]
         elif len(header) == 8 and header[7] == 'Muted':
             # ['Channel', 'User', 'Profile', 'Bridge', 'Profile', 'Menu', 'CallerID', 'Muted']
             if len(line) == 4:
                 # User Profile and Bridge Profile are empty as it should be.
                 callerid = line[2]
                 flags = 'm' if line[3] == 'Yes' else ''
+            else:
+                # User Profile and Bridge Profile are set.
+                callerid = line[4]
+                flags = 'm' if line[5] == 'Yes' else ''
         elif len(header) == 8 and header[1] == 'Flags':
             # ['Channel', 'Flags', User', 'Profile', 'Bridge', 'Profile', 'Menu', 'CallerID']
             if len(line) == 3:
